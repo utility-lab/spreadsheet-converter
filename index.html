@@ -1,60 +1,63 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <title>スプレッドシート変換ツール</title>
 <meta name="description" content="GoogleスプレッドシートとExcelを相互に変換するシンプルなツールです。">
 <meta name="keywords" content="Googleスプレッドシート, Excel, 変換, コンバーター">
+<meta name="google-site-verification" content="qI9kBv7Ey_R_ujOhEiRU7z8inwBN6ubmfGBRgq5VJa0" />
 <style>
- body { font-family: sans-serif; margin: 2em; }
- section { margin-bottom: 2em; }
- input[type=text] { width: 60%; padding: 0.5em; }
- button { padding: 0.5em 1em; margin-left: 0.5em; }
- .output-link { margin-top: 1em; }
+body { font-family: sans-serif; margin: 2em; }
+section { margin-bottom: 2em; }
+input[type=text] { width: 60%; padding: 0.5em; }
+button { padding: 0.5em 1em; margin-left: 0.5em; }
+.output-link { margin-top: 1em; }
 </style>
 </head>
 <body>
 <h1>Googleスプレッドシート ↔ Excel 変換ツール</h1>
 <section id="gs2excel">
-  <h2>GoogleスプレッドシートからExcel (.xlsx) へ</h2>
-  <p>公開設定されたスプレッドシートのURLを貼り付けてください：</p>
-  <input type="text" id="sheetUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
-  <button onclick="convertToExcel()">Excelを取得</button>
-  <div id="excelLink" class="output-link"></div>
+<h2>GoogleスプレッドシートをExcel（.xlsx）へ</h2>
+<p>公開設定されたスプレッドシートのURLを貼付けてください:</p>
+<input id="sheetUrl" type="text" placeholder="https://docs.google.com/spreadsheets/d/...">
+<button onclick="convertToExcel()">Excelを取得</button>
+<div id="excelLink" class="output-link"></div>
 </section>
 <section id="excel2gs">
-  <h2>Excel (.xlsx) からGoogleスプレッドシートへ</h2>
-  <p>ExcelファイルをGoogleドライブにアップロードすることで、Googleスプレッドシートに変換できます。</p>
-  <ol>
-    <li>Excelファイルを選択します。</li>
-    <li>「Googleドライブを開く」ボタンをクリックしてドライブを開きます。</li>
-    <li>ファイルをアップロードすると、Googleドライブで開いた際に自動的にスプレッドシートに変換されます。</li>
-  </ol>
-  <input type="file" id="excelFile" accept=".xlsx,.xls">
-  <a href="https://drive.google.com" target="_blank">
-    <button>Googleドライブを開く</button>
-  </a>
+<h2>Excel（.xlsx）をGoogleスプレッドシートへ</h2>
+<p>ExcelファイルをGoogleドライブにアップロードすると、Google スプレッドシートに変換できます。</p>
+<ol>
+<li>Excelファイルを選択してください。</li>
+<li>「Googleドライブを開く」ボタンをクリックします。</li>
+<li>Excelファイルをアップロードすると、開いた際にGoogle スプレッドシートとして自動的に変換されます。</li>
+</ol>
+<input id="excelFile" type="file" accept=".xlsx">
+<button onclick="openDrive()">Googleドライブを開く</button>
 </section>
 <script>
-function extractSheetId(url) {
-  const match = url.match(/\/d\/([^\/]+)/);
-  return match ? match[1] : null;
-}
 function convertToExcel() {
-  const url = document.getElementById('sheetUrl').value.trim();
-  const sheetId = extractSheetId(url);
-  const linkDiv = document.getElementById('excelLink');
-  linkDiv.innerHTML = '';
-  if (!sheetId) {
-    linkDiv.textContent = 'URLが正しくありません。公開設定されたGoogleスプレッドシートのURLを入力してください。';
+  var url = document.getElementById('sheetUrl').value.trim();
+  if (!url) {
+    alert('スプレッドシートのURLを入力してください。');
     return;
   }
-  const xlsxUrl = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=xlsx';
-  const a = document.createElement('a');
-  a.href = xlsxUrl;
-  a.textContent = 'Excelファイルをダウンロード';
-  a.target = '_blank';
-  linkDiv.appendChild(a);
+  var match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (!match) {
+    alert('正しいスプレッドシートのURLを入力してください。');
+    return;
+  }
+  var sheetId = match[1];
+  var downloadUrl = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=xlsx';
+  var link = document.createElement('a');
+  link.href = downloadUrl;
+  link.innerText = 'ここをクリックしてダウンロード';
+  link.download = 'sheet.xlsx';
+  var output = document.getElementById('excelLink');
+  output.innerHTML = '';
+  output.appendChild(link);
+}
+function openDrive() {
+  window.open('https://drive.google.com/drive/my-drive', '_blank');
 }
 </script>
 </body>
